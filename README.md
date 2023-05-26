@@ -21,4 +21,18 @@ sh PCA.sh [input name] [HW] [ld]
 
 Rscript pca_plot.r qced.eigenvec
 
+## GWAS-in-preparation 
+cut -f1 sample_sheet.txt | tail -n +2 > phen_id.list
+
+cut -d' ' -f1 AxiomGT1v2.merge.filtered.fam > geno_id.list
+
+cat geno_id.list phen_id.list |sort |uniq -c |awk 'BEGIN{OFS="\t"} $1==2 {print $2,$2}' > gp_ind.list
+
+plink --bfile qced --keep gp_ind.list --make-bed --out test --chr-set 42
+
+file1_col=6
+
+file2_col=2
+
+awk 'BEGIN{OFS="\t"} FNR==NR{arr[$1]=$'$file1_col'; next} {print $0, arr[$1]} ' sample_sheet.txt gp_ind.list
 
