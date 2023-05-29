@@ -34,5 +34,22 @@ file1_col=6
 
 file2_col=2
 
-awk 'BEGIN{OFS="\t"} FNR==NR{arr[$1]=$'$file1_col'; next} {print $0, arr[$1]} ' sample_sheet.txt gp_ind.list
+awk 'BEGIN{OFS="\t"} FNR==NR{arr[$1]=$'$file1_col'; next} {print $0, arr[$1]} ' sample_sheet.txt gp_ind.list > name.pheno
+
+## GCTA script
+#create non-ld data
+
+sh non-ld.sh  [input name] [HW] [ld] [output name]
+
+[HW]       remove variants that failed the Hardy-Weinberg test (recommend 0.001)
+
+[ld]       remove variants with LD geater than this value (recommend 0.5)
+
+#build genomic relationship matrix
+
+gcta64  --bfile non-ld  --make-grm --autosome-num 38 --maf 0.1  --out non-ld
+
+gcta64 --mlma --bfile test --autosome-num 38 --grm non-ld --reml-alg 1 --pheno test.pheno --out test
+
+awk '{print $2,$1,$3,$9}' test.mlma | grep -v "nan" > test.mlma.manh
 
