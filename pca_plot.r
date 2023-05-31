@@ -5,6 +5,6 @@ args <- commandArgs(T)
 df= read.table(args[1], sep=" ", stringsAsFactors=FALSE, header=F)
 plot1 <- ggplot(df, aes(x = V3, y = V4)) + geom_point() + labs(title = "PCA Plot", x = "PC1", y = "PC2")
 plot2 <- ggplot(df, aes(x = V5, y = V6)) + geom_point() + labs(title = "PCA Plot", x = "PC3", y = "PC4")
-combined_plot <- grid.arrange(plot1, plot2, ncol = 1)
-ggsave("pca_plot.png", combined_plot, width = 6, height = 12, dpi = 400)
+combined_plot <- grid.arrange(plot1, plot2, nrow = 1)
+ggsave("pca_plot.png", combined_plot, width = 12, height = 6, dpi = 400)
 
