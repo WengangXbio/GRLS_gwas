@@ -101,8 +101,19 @@ awk 'FNR==NR{a[$1]=$1; next} {if ($1 in a) {print $0, a[$1]} else {print $0, "NA
 gp_ind.list pcs_selected.eigenvec |grep -v 'NAN' |awk 'BEGIN{OFS="\t"} {$NF=""; print $0}' > pcs.corv
 ```
 ## Other factors as discrete covariates (optional)
-To treat genders, neuter or other factors as covariates
-
+To treat genders, neuter or other factors as categorical factors, prepared a sheet as follow. The category can be represented by text (male/ female) or numberic (0/ 1)
+```
+$head covar.txt
+grlsH764T844	grlsH764T844	Female	1
+grls5KPMMUCC	grls5KPMMUCC	Female	1
+grlsUBE49VBB	grlsUBE49VBB	Female	1
+grlsE2Q6OBTT	grlsE2Q6OBTT	Female	1
+grlsRZT87U00	grlsRZT87U00	Female	1
+grlsZJRGT144	grlsZJRGT144	Male	0
+grlsYOQLXM44	grlsYOQLXM44	Female	1
+grlsOBKQCCRR	grlsOBKQCCRR	Female	1
+grlsJ4RY5O33	grlsJ4RY5O33	Female	1
+```
 
 
 ## GCTA script
@@ -118,6 +129,18 @@ Running GCTA to conduct GRM and GWAS
 ```
 gcta64  --bfile non-ld  --make-grm --autosome-num 38 --maf 0.1  --out non-ld
 gcta64 --mlma --bfile test --autosome-num 38 --grm non-ld --reml-alg 1 --pheno trait1.pheno --out trait1
+awk '{print $2,$1,$3,$9}' trait1.mlma | grep -v "nan" > trait1.mlma.manh
+```
+Conduct GWAS with K + Q model
+```
+gcta64  --bfile non-ld  --make-grm --autosome-num 38 --maf 0.1  --out non-ld
+gcta64 --mlma --bfile test --autosome-num 38 --grm non-ld --reml-alg 1 --pheno trait1.pheno --qcovar pcs.corv --out trait1
+awk '{print $2,$1,$3,$9}' trait1.mlma | grep -v "nan" > trait1.mlma.manh
+```
+Conduct GWAS with K + Q model and categorical factors
+```
+gcta64  --bfile non-ld  --make-grm --autosome-num 38 --maf 0.1  --out non-ld
+gcta64 --mlma --bfile test --autosome-num 38 --grm non-ld --reml-alg 1 --pheno trait1.pheno --qcovar pcs.corv --covar covar.txt --out trait1
 awk '{print $2,$1,$3,$9}' trait1.mlma | grep -v "nan" > trait1.mlma.manh
 ```
 ## Manhattan plot and QQ plot
